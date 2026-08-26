@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>國家裝置安全防護中心</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #000000;
+            overflow: hidden;
+        }
+
+        /* 📌 功能 1：最前置的系統安全驗證提示框 */
+        .system-init-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #0a0a0a;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2000;
+        }
+
+        .system-init-box {
+            width: 90%; max-width: 400px;
+            background: #1e1e1e; border: 1px solid #3c3c3c;
+            border-radius: 6px; padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center; color: #f1f1f1;
+        }
+
+        .init-btn {
+            width: 100%; height: 40px; background: #0078d4;
+            color: #fff; border: none; border-radius: 4px;
+            font-weight: bold; cursor: pointer; margin-top: 15px;
+        }
+
+        /* 隱私授權彈窗層（第二層法規） */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+        }
+
+        .privacy-dialog {
+            width: 85%;
+            max-width: 440px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .dialog-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #d32f2f;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .dialog-content {
+            font-size: 13px;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-height: 280px;
+            overflow-y: auto;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        /* 📌 功能 2 & 5：動態偵測藍色專屬資訊框 */
+        .detect-info-box {
+            background-color: #f1f3f4;
+            border-left: 4px solid #1a73e8;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-family: monospace;
+            font-size: 11px;
+            color: #202124;
+            border-radius: 0 4px 4px 0;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .dialog-footer {
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-agree {
+            width: 100%;
+            height: 44px;
+            border-radius: 22px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            background-color: #1a73e8;
+            color: #fff;
+            transition: opacity 0.2s;
+        }
+
+        /* 點擊後的翠綠色駭客亂碼瀑布層 */
+        .glitch-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #000000;
+            z-index: 10;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* 📌 功能 3：畫面中央隨拍子震動的紅色進度條與鎖定提示 */
+        .progress-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%; max-width: 350px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #ff1111;
+            padding: 20px; border-radius: 6px;
+            text-align: center; color: #ff1111;
+            font-family: monospace; z-index: 20;
+        }
+
+        .progress-bar {
+            width: 100%; height: 15px;
+            background: #222; border: 1px solid #ff1111;
+            margin-top: 10px; border-radius: 3px; overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0%; height: 100%;
+            background: #ff1111;
+            transition: width 0.1s linear;
+        }
+
+        .hidden { display: none !important; }
+        .no-cursor { cursor: none !important; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <!-- 📌 功能 1：最前置的系統安全驗證提示框 -->
+    <div id="sys-init-layer" class="system-init-overlay">
+        <div class="system-init-box">
+            <p style="font-size: 14px; font-weight: bold; margin-bottom: 8px; color: #ff4d4d;">⚠️ [SECURITY_ALERT] ⚠️</p>
+            <p style="font-size: 13px; line-height: 1.5; color: #cccccc;">偵測到本地網路環境遭受異常封包攔截，請立即初始化資通安全環境檢測程序。</p>
+            <button class="init-btn" id="init-btn">開始硬體環境掃描</button>
+        </div>
+    </div>
+
+    <!-- 第二層：國家裝置安全防護中心與台灣法規說明 -->
+    <div id="overlay" class="overlay hidden">
+        <div class="privacy-dialog">
+            <div class="dialog-title">國家裝置安全防護中心</div>
+            <div class="dialog-content">
+                
+                <!-- 📌 功能 2 & 5：大融合偵測數據欄位 -->
+                <div class="detect-info-box">
+                    [校驗年份]：<span id="current-year" style="color: #d32f2f; font-weight: bold;">Loading...</span><br>
+                    [檢查時間]：<span id="current-time">Loading...</span><br>
+                    [連線裝置]：<span id="detected-device" style="color: #1a73e8; font-weight: bold;">Analyzing...</span><br>
+                    [瀏覽核心]：<span id="detected-browser" style="color: #07c160;">Analyzing...</span><br>
+                    [網路網關]：192.168.1.104 (中華電信 Hinet 數據中心_TW)<br>
+                    [威脅狀態]：發現未授權之底層協定漏洞，電磁紀錄隔離中
+                </div>
+
+                <b>【系統安全提示：當前連線裝置硬體異常檢測】</b><br>
+                資安防護系統偵測到您目前使用的行動裝置或個人電腦，其系統底層通訊協議存在重大安全漏洞。為防止您的硬體元件、IMEI 識別碼與內部個人隱私資料外洩，本中心已依據中華民國《個人資料保護法》第 8 條與第 19 條規定，暫時將您的連線環境與電磁紀錄進行隔離保護。本安全校驗環境受《資通安全管理法》第 12 條國家關鍵基礎設施防護機制，以及《通訊保障及監察法》第 11 條通訊安全監測條款之全方位限制。
+                <br><br>
+                <b>【妨害電腦使用罪警告】</b><br>
+                依據《中華民國刑法》第 358 條規定，無故輸入他人帳號密碼、破解電腦之保護措施或利用電腦系統之漏洞，而入侵他人之電腦或其相關設備者，處三年以下有期徒刑、拘役或科或併科三十萬元以下罰金。
+                <br><br>
+                依據《中華民國刑法》第 359 條規定，無故取得、刪除或變更他人電腦或其相關設備之電磁紀錄，致生損害於公眾或他人者，處五年以下有期徒刑。
+                <br><br>
+                請立即點擊下方按鈕啟動本機裝置底層硬體與安全模組校驗程序。若在 300 秒內未完成校驗，本系統將強制中止當前網域連線以確保核心資安。
+            </div>
+            <div class="dialog-footer">
+                <button class="btn-agree" id="start-btn">立即按下按鈕以啟動裝置安全檢查</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第三層：點擊後綠色亂碼瀑布畫布 -->
+    <div id="glitch-wrap" class="glitch-screen hidden">
+        <canvas id="matrix"></canvas>
+        
+        <!-- 📌 功能 3：大爆發時跑出的紅色硬體鎖定進度條與提示 -->
+        <div id="progress-box" class="progress-container">
+            <div id="progress-status" style="font-size: 13px; font-weight: bold;">[SYSTEM] 正在鎖定 C 槽系統磁區...</div>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div id="progress-percent" style="font-size: 12px; margin-top: 5px;">0%</div>
+        </div>
+    </div>
+
+    <script>
+        const sysInitLayer = document.getElementById('sys-init-layer');
+        const initBtn = document.getElementById('init-btn');
+        const overlay = document.getElementById('overlay');
+        const glitchWrap = document.getElementById('glitch-wrap');
+        const startBtn = document.getElementById('start-btn');
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        
+        const progressBox = document.getElementById('progress-box');
+        const progressFill = document.getElementById('progress-fill');
+        const progressStatus = document.getElementById('progress-status');
+        const progressPercent = document.getElementById('progress-percent');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // 🧠 年份、時間、裝置、與瀏覽器版本動態計算
+        const now = new Date();
+        document.getElementById('current-year').innerText = now.getFullYear() + " 年 (民國 " + (now.getFullYear() - 1911) + " 年)";
+        document.getElementById('current-time').innerText = now.toLocaleString('zh-TW', { hour12: false });
+        
+        let userAgent = navigator.userAgent;
+        let deviceName = "未知安全設備 (Unknown Device)";
+        if (/android/i.test(userAgent)) { deviceName = "Android 行動主機 (行動裝置)"; }
+        else if (/iPad|iPhone|iPod/.test(userAgent)) { deviceName = "Apple iOS 行動裝置 (iPhone/iPad)"; }
+        else if (/Macintosh/i.test(userAgent)) { deviceName = "Apple Mac OS (電腦主機)"; }
+        else if (/Windows NT/i.test(userAgent)) { deviceName = "Windows PC (電腦主機)"; }
+        document.getElementById('detected-device').innerText = deviceName;
+
+        let browserName = "Standard Secure Browser";
+        if (userAgent.indexOf("Firefox") > -1) { browserName = "Mozilla Firefox (核心已受監控)"; }
+        else if (userAgent.indexOf("SamsungBrowser") > -1) { browserName = "Samsung Browser (安全限制)"; }
+        else if (userAgent.indexOf("Chrome") > -1) { browserName = "Google Chrome Browser (資安校驗)"; }
+        else if (userAgent.indexOf("Safari") > -1) { browserName = "Apple Safari Mobile (核心已監控)"; }
+        document.getElementById('detected-browser').innerText = browserName;
+
+        // 亂碼字元庫
+        const terrorChars = ['☠', '☣', '⚡', '⚙', '⚰', '🪦', '⛧', '⛚', 'S̸̭̈́Y̵͋͜S̸̛̼T̵̡̉E̶̲̽M̷̱̑', 'F̸̨͋Â̵̡Ḭ̸͠L̸̢̔Ŭ̷̱R̵̡̽E̸͈̓', '0x00004188', '0xDEADBEEF', '01001000'];
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const rainDrops = Array(Math.floor(columns)).fill(1);
+
+        function drawTerrorRain() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = Math.random() > 0.1 ? '#00ff00' : '#004400';
+            ctx.font = 'bold ' + fontSize + 'px monospace';
