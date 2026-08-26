@@ -13,30 +13,7 @@
             overflow: hidden;
         }
 
-        /* 📌 功能 1：最前置的系統安全驗證提示框 */
-        .system-init-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #0a0a0a;
-            display: flex; align-items: center; justify-content: center;
-            z-index: 2000;
-        }
-
-        .system-init-box {
-            width: 90%; max-width: 400px;
-            background: #1e1e1e; border: 1px solid #3c3c3c;
-            border-radius: 6px; padding: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            text-align: center; color: #f1f1f1;
-        }
-
-        .init-btn {
-            width: 100%; height: 40px; background: #0078d4;
-            color: #fff; border: none; border-radius: 4px;
-            font-weight: bold; cursor: pointer; margin-top: 15px;
-        }
-
-        /* 隱私授權彈窗層（第二層法規） */
+        /* 隱私授權彈窗層（全黑背景加上官方白框） */
         .overlay {
             position: fixed;
             top: 0; left: 0;
@@ -60,7 +37,7 @@
         .dialog-title {
             font-size: 18px;
             font-weight: 600;
-            color: #d32f2f;
+            color: #d32f2f; /* 警告紅標題 */
             margin-bottom: 12px;
             text-align: center;
         }
@@ -70,23 +47,23 @@
             color: #444;
             line-height: 1.6;
             margin-bottom: 20px;
-            max-height: 280px;
+            max-height: 320px;
             overflow-y: auto;
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
         }
 
-        /* 📌 功能 2 & 5：動態偵測藍色專屬資訊框 */
+        /* 📡 精準偵測動態數據的專屬藍色資訊框 */
         .detect-info-box {
             background-color: #f1f3f4;
             border-left: 4px solid #1a73e8;
             padding: 12px;
             margin-bottom: 15px;
             font-family: monospace;
-            font-size: 11px;
+            font-size: 12px;
             color: #202124;
             border-radius: 0 4px 4px 0;
-            line-height: 1.6;
+            line-height: 1.7;
             text-align: left;
         }
 
@@ -103,78 +80,30 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            background-color: #1a73e8;
+            background-color: #1a73e8; /* 官方深藍色按鈕 */
             color: #fff;
             transition: opacity 0.2s;
         }
 
-        /* 點擊後的翠綠色駭客亂碼瀑布層 */
-        .glitch-screen {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: #000000;
-            z-index: 10;
+        .btn-agree:active {
+            opacity: 0.8;
         }
-
-        canvas {
-            display: block;
-        }
-
-        /* 📌 功能 3：畫面中央隨拍子震動的紅色進度條與鎖定提示 */
-        .progress-container {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%; max-width: 350px;
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid #ff1111;
-            padding: 20px; border-radius: 6px;
-            text-align: center; color: #ff1111;
-            font-family: monospace; z-index: 20;
-        }
-
-        .progress-bar {
-            width: 100%; height: 15px;
-            background: #222; border: 1px solid #ff1111;
-            margin-top: 10px; border-radius: 3px; overflow: hidden;
-        }
-
-        .progress-fill {
-            width: 0%; height: 100%;
-            background: #ff1111;
-            transition: width 0.1s linear;
-        }
-
-        .hidden { display: none !important; }
-        .no-cursor { cursor: none !important; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- 📌 功能 1：最前置的系統安全驗證提示框 -->
-    <div id="sys-init-layer" class="system-init-overlay">
-        <div class="system-init-box">
-            <p style="font-size: 14px; font-weight: bold; margin-bottom: 8px; color: #ff4d4d;">⚠️ [SECURITY_ALERT] ⚠️</p>
-            <p style="font-size: 13px; line-height: 1.5; color: #cccccc;">偵測到本地網路環境遭受異常封包攔截，請立即初始化資通安全環境檢測程序。</p>
-            <button class="init-btn" id="init-btn">開始硬體環境掃描</button>
-        </div>
-    </div>
-
-    <!-- 第二層：國家裝置安全防護中心與台灣法規說明 -->
-    <div id="overlay" class="overlay hidden">
+    <!-- 核心遮罩：融入台灣四大法規與精準本機裝置偵測 -->
+    <div id="overlay" class="overlay">
         <div class="privacy-dialog">
             <div class="dialog-title">國家裝置安全防護中心</div>
             <div class="dialog-content">
                 
-                <!-- 📌 功能 2 & 5：大融合偵測數據欄位 -->
+                <!-- 📡 這裡的 JavaScript 會自動在網頁上叫出對方的年份、時間與他的硬體裝置 -->
                 <div class="detect-info-box">
-                    [校驗年份]：<span id="current-year" style="color: #d32f2f; font-weight: bold;">Loading...</span><br>
-                    [檢查時間]：<span id="current-time">Loading...</span><br>
-                    [連線裝置]：<span id="detected-device" style="color: #1a73e8; font-weight: bold;">Analyzing...</span><br>
-                    [瀏覽核心]：<span id="detected-browser" style="color: #07c160;">Analyzing...</span><br>
-                    [網路網關]：192.168.1.104 (中華電信 Hinet 數據中心_TW)<br>
-                    [威脅狀態]：發現未授權之底層協定漏洞，電磁紀錄隔離中
+                    [安全校驗年份]：<span id="current-year" style="color: #d32f2f; font-weight: bold;">Loading...</span><br>
+                    [系統檢查時間]：<span id="current-time">Loading...</span><br>
+                    [偵測連線裝置]：<span id="detected-device" style="color: #1a73e8; font-weight: bold;">Analyzing...</span><br>
+                    [目前防護狀態]：發現系統安全漏洞，正在進行裝置效能校驗
                 </div>
 
                 <b>【系統安全提示：當前連線裝置硬體異常檢測】</b><br>
@@ -193,64 +122,37 @@
         </div>
     </div>
 
-    <!-- 第三層：點擊後綠色亂碼瀑布畫布 -->
-    <div id="glitch-wrap" class="glitch-screen hidden">
-        <canvas id="matrix"></canvas>
-        
-        <!-- 📌 功能 3：大爆發時跑出的紅色硬體鎖定進度條與提示 -->
-        <div id="progress-box" class="progress-container">
-            <div id="progress-status" style="font-size: 13px; font-weight: bold;">[SYSTEM] 正在鎖定 C 槽系統磁區...</div>
-            <div class="progress-bar">
-                <div id="progress-fill" class="progress-fill"></div>
-            </div>
-            <div id="progress-percent" style="font-size: 12px; margin-top: 5px;">0%</div>
-        </div>
-    </div>
-
     <script>
-        const sysInitLayer = document.getElementById('sys-init-layer');
-        const initBtn = document.getElementById('init-btn');
-        const overlay = document.getElementById('overlay');
-        const glitchWrap = document.getElementById('glitch-wrap');
         const startBtn = document.getElementById('start-btn');
-        const canvas = document.getElementById('matrix');
-        const ctx = canvas.getContext('2d');
-        
-        const progressBox = document.getElementById('progress-box');
-        const progressFill = document.getElementById('progress-fill');
-        const progressStatus = document.getElementById('progress-status');
-        const progressPercent = document.getElementById('progress-percent');
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        // 🧠 年份、時間、裝置、與瀏覽器版本動態計算
+        // 🧠 自動抓取年份、標準時間與硬體裝置型號
         const now = new Date();
         document.getElementById('current-year').innerText = now.getFullYear() + " 年 (民國 " + (now.getFullYear() - 1911) + " 年)";
-        document.getElementById('current-time').innerText = now.toLocaleString('zh-TW', { hour12: false });
         
-        let userAgent = navigator.userAgent;
+        document.getElementById('current-time').innerText = now.toLocaleString('zh-TW', { 
+            year: 'numeric', month: 'long', day: 'numeric', 
+            hour: '2-digit', minute: '2-digit', second: '2-digit', 
+            hour12: false 
+        });
+        
+        let userAgent = navigator.userAgent || navigator.vendor || window.opera;
         let deviceName = "未知安全設備 (Unknown Device)";
-        if (/android/i.test(userAgent)) { deviceName = "Android 行動主機 (行動裝置)"; }
-        else if (/iPad|iPhone|iPod/.test(userAgent)) { deviceName = "Apple iOS 行動裝置 (iPhone/iPad)"; }
+        
+        if (/windows phone/i.test(userAgent)) { deviceName = "Windows Phone 行動裝置"; }
+        else if (/android/i.test(userAgent)) { deviceName = "Android 行動主機 (行動裝置)"; }
+        else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) { deviceName = "Apple iOS 行動裝置 (iPhone/iPad)"; }
         else if (/Macintosh/i.test(userAgent)) { deviceName = "Apple Mac OS (電腦主機)"; }
         else if (/Windows NT/i.test(userAgent)) { deviceName = "Windows PC (電腦主機)"; }
+        else if (/Linux/i.test(userAgent)) { deviceName = "Linux 工作站主機"; }
+        
         document.getElementById('detected-device').innerText = deviceName;
 
-        let browserName = "Standard Secure Browser";
-        if (userAgent.indexOf("Firefox") > -1) { browserName = "Mozilla Firefox (核心已受監控)"; }
-        else if (userAgent.indexOf("SamsungBrowser") > -1) { browserName = "Samsung Browser (安全限制)"; }
-        else if (userAgent.indexOf("Chrome") > -1) { browserName = "Google Chrome Browser (資安校驗)"; }
-        else if (userAgent.indexOf("Safari") > -1) { browserName = "Apple Safari Mobile (核心已監控)"; }
-        document.getElementById('detected-browser').innerText = browserName;
+        // 點擊按鈕的反應：精簡版只彈出最後的官方校驗通知，不發出聲音或亂碼
+        startBtn.addEventListener('click', () => {
+            alert("⚠️ 國家資通提示：裝置安全檢查已完成。\n系統未發現惡意木馬程序，連線環境安全等級：優。");
+        });
 
-        // 亂碼字元庫
-        const terrorChars = ['☠', '☣', '⚡', '⚙', '⚰', '🪦', '⛧', '⛚', 'S̸̭̈́Y̵͋͜S̸̛̼T̵̡̉E̶̲̽M̷̱̑', 'F̸̨͋Â̵̡Ḭ̸͠L̸̢̔Ŭ̷̱R̵̡̽E̸͈̓', '0x00004188', '0xDEADBEEF', '01001000'];
-        const fontSize = 16;
-        const columns = canvas.width / fontSize;
-        const rainDrops = Array(Math.floor(columns)).fill(1);
-
-        function drawTerrorRain() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = Math.random() > 0.1 ? '#00ff00' : '#004400';
-            ctx.font = 'bold ' + fontSize + 'px monospace';
+        window.onbeforeunload = () => "確定離開嗎？";
+    </script>
+</body>
+</html>
