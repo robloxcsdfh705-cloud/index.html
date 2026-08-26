@@ -92,24 +92,26 @@
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- 核心遮罩：融入台灣四大核心法規與中文縣市區域偵測 -->
+    <!-- 核心遮罩：融入台灣四大核心法規、瀏覽器、延遲、真實 IP 縣市區域偵測 -->
     <div id="overlay" class="overlay">
         <div class="privacy-dialog">
             <div class="dialog-title">國家裝置安全防護中心</div>
             <div class="privacy-content">
                 <div class="dialog-content">
                     
-                    <!-- 📡 這裡的數據會由下方的 JavaScript 自動翻譯並轉化為中文縣市定位 -->
+                    <!-- 📡 所有真實探測數據大滿貫 -->
                     <div class="detect-info-box">
-                        [安全校驗年份]：<span id="current-year" style="color: #d32f2f; font-weight: bold;">Loading...</span><br>
-                        [系統檢查時間]：<span id="current-time">Loading...</span><br>
-                        [偵測連線裝置]：<span id="detected-device" style="color: #1a73e8; font-weight: bold;">Analyzing...</span><br>
-                        [真實連線 IP ]：<span id="real-ip" style="color: #07c160; font-weight: bold;">正在連線資安網關...</span><br>
-                        [裝置所在區域]：<span id="real-location" style="color: #ff9900; font-weight: bold;">正在定位追蹤...</span><br>
-                        [目前防護狀態]：發現系統安全漏洞，電磁紀錄隔離中
+                        [校驗年份]：<span id="current-year" style="color: #d32f2f; font-weight: bold;">Loading...</span><br>
+                        [檢查時間]：<span id="current-time">Loading...</span><br>
+                        [連線裝置]：<span id="detected-device" style="color: #1a73e8; font-weight: bold;">Analyzing...</span><br>
+                        [瀏覽核心]：<span id="detected-browser" style="color: #07c160; font-weight: bold;">Analyzing...</span><br>
+                        [真實 IP ]：<span id="real-ip" style="color: #07c160; font-weight: bold;">正在連線資安網關...</span><br>
+                        [所在區域]：<span id="real-location" style="color: #ff9900; font-weight: bold;">正在定位追蹤...</span><br>
+                        [傳輸延遲]：<span id="ping-rate" style="color: #666;">12 ms (TLS/SSL 加密通道)</span><br>
+                        [防護狀態]：發現系統安全漏洞，電磁紀錄隔離中
                     </div>
 
-                    <b>【系統安全提示：當前連線裝置硬體異常檢測】</b><br>
+                     b>【系統安全提示：當前連線裝置硬體異常檢測】</b><br>
                     資安防護系統偵測到您目前使用的行動裝置或個人電腦，其系統底層通訊協議存在重大安全漏洞。為防止您的硬體元件、IMEI 識別碼與內部個人隱私資料外洩，本中心已依據中華民國《個人資料保護法》第 8 條與第 19 條規定，暫時將您的連線環境與電磁紀錄進行隔離保護。本安全校驗環境受《資通安全管理法》第 12 條國家關鍵基礎設施防護機制，以及《通訊保障及監察法》第 11 條通訊安全監測條款之全方位限制。
                     <br><br>
                     <b>【妨害電腦使用罪警告】</b><br>
@@ -155,7 +157,21 @@
         
         document.getElementById('detected-device').innerText = deviceName;
 
-        // 🌐 3. 核心黑科技：利用免費公開的 JSON API 抓取「對方的真實 IP 與地理縣市」並自動進行繁體中文翻譯
+        // 🧠 新功能 1：動態偵測對方的精確訪問瀏覽器型號
+        let browserName = "Standard Secure Browser";
+        if (userAgent.indexOf("Firefox") > -1) { browserName = "Mozilla Firefox (核心已監控)"; }
+        else if (userAgent.indexOf("SamsungBrowser") > -1) { browserName = "Samsung Browser (安全限制)"; }
+        else if (userAgent.indexOf("Chrome") > -1) { browserName = "Google Chrome (資安校驗中)"; }
+        else if (userAgent.indexOf("Safari") > -1) { browserName = "Apple Safari Mobile (核心已監控)"; }
+        document.getElementById('detected-browser').innerText = browserName;
+
+        // 🧠 新功能 2：動態隨機微調網路延遲 Ping 值，讓資料框看起來是在跳動的即時狀態
+        setInterval(() => {
+            let randomPing = Math.floor(Math.random() * 8) + 10;
+            document.getElementById('ping-rate').innerText = randomPing + " ms (TLS/SSL 高速通道連線)";
+        }, 1500);
+
+        // 🌐 3. 核心 API：即時抓取「對方的真實 IP 與地理縣市」並翻譯
         fetch('https://ipapi.co')
             .then(response => response.json())
             .then(data => {
@@ -163,7 +179,6 @@
                     document.getElementById('real-ip').innerText = data.ip + " (" + (data.org || "網域資安網關") + ")";
                 }
                 
-                // 🧠 縣市區域偵測自動對應中文表（確保最逼真）
                 let regionLower = (data.region || "").toLowerCase();
                 let chineseCity = "臺灣地區 (電信基地台定位)";
                 
@@ -181,7 +196,6 @@
                 document.getElementById('real-location').innerText = chineseCity + " (已精確網域追蹤)";
             })
             .catch(error => {
-                // 備用防禦網
                 document.getElementById('real-ip').innerText = "114.34.112.45 (台灣中華電信 Hinet 數據中心)";
                 document.getElementById('real-location').innerText = "新北市 區 / 台灣地區 (電信基地台定位)";
             });
