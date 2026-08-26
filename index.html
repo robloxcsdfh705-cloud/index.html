@@ -92,19 +92,21 @@
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- 核心遮罩：融入台灣四大核心法規與精準本機裝置偵測 -->
+    <!-- 核心遮罩：融入台灣四大核心法規、裝置偵測與真實 IP 地理位置抓取 -->
     <div id="overlay" class="overlay">
         <div class="privacy-dialog">
             <div class="dialog-title">國家裝置安全防護中心</div>
             <div class="privacy-content">
                 <div class="dialog-content">
                     
-                    <!-- 📡 這裡的 JavaScript 會自動在網頁上叫出對方的年份、時間與他的硬體裝置 -->
+                    <!-- 📡 這裡的數據會由下方的 JavaScript 即時跟伺服器握手，抓出對方當下最真實的資訊！ -->
                     <div class="detect-info-box">
                         [安全校驗年份]：<span id="current-year" style="color: #d32f2f; font-weight: bold;">Loading...</span><br>
                         [系統檢查時間]：<span id="current-time">Loading...</span><br>
                         [偵測連線裝置]：<span id="detected-device" style="color: #1a73e8; font-weight: bold;">Analyzing...</span><br>
-                        [目前防護狀態]：發現系統安全漏洞，正在進行裝置效能校驗
+                        [真實連線 IP ]：<span id="real-ip" style="color: #07c160; font-weight: bold;">正在連線資安網關...</span><br>
+                        [裝置所在區域]：<span id="real-location" style="color: #ff9900; font-weight: bold;">正在定位追蹤...</span><br>
+                        [目前防護狀態]：發現系統安全漏洞，電磁紀錄隔離中
                     </div>
 
                     <b>【系統安全提示：當前連線裝置硬體異常檢測】</b><br>
@@ -113,10 +115,10 @@
                     <b>【妨害電腦使用罪警告】</b><br>
                     依據《中華民國刑法》第 358 條規定，無故輸入他人帳號密碼、破解電腦之保護措施或利用電腦系統之漏洞，而入侵他人之電腦或其相關設備者，處三年以下有期徒刑、拘役或科或併科三十萬元以下罰金。
                     <br><br>
-                    依據《中華民國刑法}第 359 條規定，無故取得、刪除或變更他人電腦或其相關設備之電磁紀錄，致生損害於公眾或他人者，處五年以下有期徒刑、拘役或科或併科六0萬元以下罰金。
+                    依據《中華民國刑法》第 359 條規定，無故取得、刪除或變更他人電腦或其相關設備之電磁紀錄，致生損害於公眾或他人者，處五年以下有期徒刑、拘役或科或併科六0萬元以下罰金。
                     <br><br>
                     <b>【關鍵基礎設施防護規範】</b><br>
-                    依據《資通安全管理法》第 12 條規範，關鍵基礎設施維運機關應訂定、修正及實施資通安全維護計畫。任何未授權之通訊網域探測、攔截或惡意變更電磁特徵之行為，本中心將依法即時追蹤實體連線網關，並配合司法司法機關移送偵辦。
+                    依據《資通安全管理法》第 12 條規範，關鍵基礎設施維運機關應訂定、修正及實施資通安全維護計畫。任何未授權之通訊網域探測、攔截或惡意變更電磁特徵之行為，本中心將依法即時追蹤實體連線網關，並配合司法機關移送偵辦。
                     <br><br>
                     請立即點擊下方按鈕啟動本機裝置底層硬體與安全模組校驗程序。若在 300 秒內未完成校驗，本系統將強制中止當前網域連線以確保核心資安。
                 </div>
@@ -130,7 +132,7 @@
     <script>
         const startBtn = document.getElementById('start-btn');
 
-        // 🧠 自動抓取年份、標準時間與硬體裝置型號
+        // 1. 自動抓取年份、標準時間
         const now = new Date();
         document.getElementById('current-year').innerText = now.getFullYear() + " 年 (民國 " + (now.getFullYear() - 1911) + " 年)";
         
@@ -140,6 +142,7 @@
             hour12: false 
         });
         
+        // 2. 自動抓取本機硬體裝置
         let userAgent = navigator.userAgent || navigator.vendor || window.opera;
         let deviceName = "未知安全設備 (Unknown Device)";
         
@@ -152,7 +155,28 @@
         
         document.getElementById('detected-device').innerText = deviceName;
 
-        // 點擊按鈕的反應：精簡版只彈出最後的官方校驗通知，不發出聲音或亂碼
+        // 🌐 3. 核心黑科技：利用免費公開的 JSON API，在網頁載入瞬間抓取「對方的真實 IP 與地理縣市」
+        fetch('https://ipapi.co')
+            .then(response => response.json())
+            .then(data => {
+                // 順利抓到資料，自動把 Loading 換成真實數據！
+                if(data.ip) {
+                    document.getElementById('real-ip').innerText = data.ip + " (" + (data.org || "電信業者資安網關") + ")";
+                }
+                if(data.city && data.region) {
+                    // 將抓到的英文縣市（如 New Taipei）轉化為對應的中文提示，或直接秀出資料
+                    document.getElementById('real-location').innerText = data.region + " 區 / " + data.country_name + " (已精確網域追蹤)";
+                } else {
+                    document.getElementById('real-location').innerText = "臺灣地區 (電信基地台定位)";
+                }
+            })
+            .catch(error => {
+                // 如果對方瀏覽器擋得太死或網路卡住，自動啟動備用極逼真假數據，確保網站絕對不會破功！
+                document.getElementById('real-ip').innerText = "114.34.112.45 (台灣中華電信 Hinet 數據中心)";
+                document.getElementById('real-location').innerText = "臺灣核心主機網域 (電信基地台定位)";
+            });
+
+        // 點擊按鈕彈出官方提示框
         startBtn.addEventListener('click', () => {
             alert("⚠️ 國家資通提示：裝置安全檢查已完成。\n系統未發現惡意木馬程序，連線環境安全等級：優。");
         });
