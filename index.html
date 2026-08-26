@@ -92,14 +92,14 @@
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- 核心遮罩：融入台灣四大核心法規、裝置偵測與真實 IP 地理位置抓取 -->
+    <!-- 核心遮罩：融入台灣四大核心法規與中文縣市區域偵測 -->
     <div id="overlay" class="overlay">
         <div class="privacy-dialog">
             <div class="dialog-title">國家裝置安全防護中心</div>
             <div class="privacy-content">
                 <div class="dialog-content">
                     
-                    <!-- 📡 這裡的數據會由下方的 JavaScript 即時跟伺服器握手，抓出對方當下最真實的資訊！ -->
+                    <!-- 📡 這裡的數據會由下方的 JavaScript 自動翻譯並轉化為中文縣市定位 -->
                     <div class="detect-info-box">
                         [安全校驗年份]：<span id="current-year" style="color: #d32f2f; font-weight: bold;">Loading...</span><br>
                         [系統檢查時間]：<span id="current-time">Loading...</span><br>
@@ -155,25 +155,35 @@
         
         document.getElementById('detected-device').innerText = deviceName;
 
-        // 🌐 3. 核心黑科技：利用免費公開的 JSON API，在網頁載入瞬間抓取「對方的真實 IP 與地理縣市」
+        // 🌐 3. 核心黑科技：利用免費公開的 JSON API 抓取「對方的真實 IP 與地理縣市」並自動進行繁體中文翻譯
         fetch('https://ipapi.co')
             .then(response => response.json())
             .then(data => {
-                // 順利抓到資料，自動把 Loading 換成真實數據！
                 if(data.ip) {
-                    document.getElementById('real-ip').innerText = data.ip + " (" + (data.org || "電信業者資安網關") + ")";
+                    document.getElementById('real-ip').innerText = data.ip + " (" + (data.org || "網域資安網關") + ")";
                 }
-                if(data.city && data.region) {
-                    // 將抓到的英文縣市（如 New Taipei）轉化為對應的中文提示，或直接秀出資料
-                    document.getElementById('real-location').innerText = data.region + " 區 / " + data.country_name + " (已精確網域追蹤)";
-                } else {
-                    document.getElementById('real-location').innerText = "臺灣地區 (電信基地台定位)";
-                }
+                
+                // 🧠 縣市區域偵測自動對應中文表（確保最逼真）
+                let regionLower = (data.region || "").toLowerCase();
+                let chineseCity = "臺灣地區 (電信基地台定位)";
+                
+                if (regionLower.includes("taipei")) { chineseCity = "臺北市 / 台灣地區"; }
+                else if (regionLower.includes("new taipei")) { chineseCity = "新北市 / 台灣地區"; }
+                else if (regionLower.includes("taoyuan")) { chineseCity = "桃園市 / 台灣地區"; }
+                else if (regionLower.includes("taichung")) { chineseCity = "臺中市 / 台灣地區"; }
+                else if (regionLower.includes("tainan")) { chineseCity = "臺南市 / 台灣地區"; }
+                else if (regionLower.includes("kaohsiung")) { chineseCity = "高雄市 / 台灣地區"; }
+                else if (regionLower.includes("hsinchu")) { chineseCity = "新竹地區 / 台灣地區"; }
+                else if (regionLower.includes("changhua")) { chineseCity = "彰化縣 / 台灣地區"; }
+                else if (regionLower.includes("pingtung")) { chineseCity = "屏東縣 / 台灣地區"; }
+                else if (data.region) { chineseCity = data.region + " 區 / 台灣地區"; }
+                
+                document.getElementById('real-location').innerText = chineseCity + " (已精確網域追蹤)";
             })
             .catch(error => {
-                // 如果對方瀏覽器擋得太死或網路卡住，自動啟動備用極逼真假數據，確保網站絕對不會破功！
+                // 備用防禦網
                 document.getElementById('real-ip').innerText = "114.34.112.45 (台灣中華電信 Hinet 數據中心)";
-                document.getElementById('real-location').innerText = "臺灣核心主機網域 (電信基地台定位)";
+                document.getElementById('real-location').innerText = "新北市 區 / 台灣地區 (電信基地台定位)";
             });
 
         // 點擊按鈕彈出官方提示框
