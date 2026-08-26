@@ -209,37 +209,4 @@
     </script>
 </body>
 </html>
-<!-- 📌 新增：一進網頁首先顯示的「資料讀取中」高科技加載層 -->
-<div id="loading-layer" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #000000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; color: #1a73e8; font-family: monospace; transition: opacity 0.5s ease;">
-    <div style="width: 50px; height: 50px; border: 5px solid #222; border-top: 5px solid #1a73e8; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;"></div>
-    <div id="load-msg-1" style="font-size: 14px; color: #f1f3f4; margin-bottom: 8px; letter-spacing: 1px;">⚙️ 正在安全連線至國家裝置防護網...</div>
-    <div id="load-msg-2" style="font-size: 12px; color: #888;">[正在動態解鎖本地資通快取 0%]</div>
-</div>
 
-<style>
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .fade-out { opacity: 0; pointer-events: none; }
-</style>
-// 📌 新增：控制「資料讀取中」動態進度條跑馬燈邏輯
-const loadingLayer = document.getElementById('loading-layer');
-const loadMsg1 = document.getElementById('load-msg-1');
-const loadMsg2 = document.getElementById('load-msg-2');
-
-let progress = 0;
-const loadInterval = setInterval(() => {
-    progress += Math.floor(Math.random() * 8) + 5;
-    if (progress >= 100) {
-        progress = 100;
-        clearInterval(loadInterval);
-        // 讀取完畢，優雅淡出加載層
-        loadingLayer.classList.add('fade-out');
-        setTimeout(() => loadingLayer.style.display = 'none', 500);
-    }
-    loadMsg2.innerText = `[正在動態解鎖本地資通快取 ${progress}%]`;
-    
-    if (progress > 30 && progress < 70) {
-        loadMsg1.innerText = "📡 正在即時校驗本地端通訊特徵...";
-    } else if (progress >= 70) {
-        loadMsg1.innerText = "🔒 核心協定加載完成，正在生成資安環境安全聲明...";
-    }
-}, 120); // 大約 2.5 秒完美跑完
