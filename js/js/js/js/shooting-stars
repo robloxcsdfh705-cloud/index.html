@@ -1,1 +1,10 @@
+// 流星動畫
+const ssContainer = document.getElementById('shootingStars');
+setInterval(() => {
+  const s = document.createElement('div');
+  s.className = 'shooting-star';
+  s.style.top = Math.random()*50+'%'; s.style.left = Math.random()*80+20+'%';
+  s.style.animationDuration = (Math.random()*1.5+1.5)+'s';
+  ssContainer.appendChild(s); setTimeout(() => s.remove(), 3500);
+}, 2500);
 
