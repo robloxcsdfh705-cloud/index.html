@@ -1,1 +1,21 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>1+1?</title>
+<style>
+body{margin:0;background:#030014;overflow:hidden;display:flex;align-items:center;justify-content:center;height:100vh}
+.galaxy{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:800px;animation:spin 40s linear infinite}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.arm{position:absolute;top:50%;left:50%;width:400px;height:100px;transform-origin:0 50%;border-radius:50%;filter:blur(25px)}
+.arm:nth-child(1){background:linear-gradient(90deg,#8338ec,transparent);transform:rotate(0deg)}
+.arm:nth-child(2){background:linear-gradient(90deg,#00f5ff,transparent);transform:rotate(90deg)}
+.arm:nth-child(3){background:linear-gradient(90deg,#ff006e,transparent);transform:rotate(180deg)}
+.arm:nth-child(4){background:linear-gradient(90deg,#0a0a2e,transparent);transform:rotate(270deg)}
+.core{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,#ffbe0b,#ff006e,transparent 70%);filter:blur(18px);animation:pulse 4s ease infinite}
+@keyframes pulse{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}}
+</style>
+</head><body>
+<div class="galaxy">
+<div class="arm"></div><div class="arm"></div><div class="arm"></div><div class="arm"></div>
+<div class="core"></div>
+</div>
+</body></html>
 
